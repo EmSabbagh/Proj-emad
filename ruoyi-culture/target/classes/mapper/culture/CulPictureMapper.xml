@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.culture.mapper.CulPictureMapper">
+    
+    <resultMap type="CulPicture" id="CulPictureResult">
+        <result property="id"    column="id"    />
+        <result property="addr"    column="addr"    />
+        <result property="label"    column="label"    />
+    </resultMap>
+
+    <sql id="selectCulPictureVo">
+        select id, addr, label from cul_picture
+    </sql>
+
+    <select id="selectCulPictureList" parameterType="CulPicture" resultMap="CulPictureResult">
+        <include refid="selectCulPictureVo"/>
+        <where>  
+            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
+            <if test="label != null  and label != ''"> and label like concat('%', #{label}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectCulPictureById" parameterType="Long" resultMap="CulPictureResult">
+        <include refid="selectCulPictureVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCulPicture" parameterType="CulPicture" useGeneratedKeys="true" keyProperty="id">
+        insert into cul_picture
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="addr != null">addr,</if>
+            <if test="label != null">label,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="addr != null">#{addr},</if>
+            <if test="label != null">#{label},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCulPicture" parameterType="CulPicture">
+        update cul_picture
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="addr != null">addr = #{addr},</if>
+            <if test="label != null">label = #{label},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCulPictureById" parameterType="Long">
+        delete from cul_picture where id = #{id}
+    </delete>
+
+    <delete id="deleteCulPictureByIds" parameterType="String">
+        delete from cul_picture where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
