@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.culture.mapper.CulEventMapper">
+    
+    <resultMap type="CulEvent" id="CulEventResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="publishUser"    column="publish_user"    />
+    </resultMap>
+
+    <sql id="selectCulEventVo">
+        select id, title, content, publish_time, publish_user from cul_event
+    </sql>
+
+    <select id="selectCulEventList" parameterType="CulEvent" resultMap="CulEventResult">
+        <include refid="selectCulEventVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="params.beginPublishTime != null and params.beginPublishTime != '' and params.endPublishTime != null and params.endPublishTime != ''"> and publish_time between #{params.beginPublishTime} and #{params.endPublishTime}</if>
+            <if test="publishUser != null "> and publish_user = #{publishUser}</if>
+        </where>
+    </select>
+    
+    <select id="selectCulEventById" parameterType="Long" resultMap="CulEventResult">
+        <include refid="selectCulEventVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCulEvent" parameterType="CulEvent" useGeneratedKeys="true" keyProperty="id">
+        insert into cul_event
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="publishUser != null">publish_user,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="publishUser != null">#{publishUser},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCulEvent" parameterType="CulEvent">
+        update cul_event
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="publishUser != null">publish_user = #{publishUser},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCulEventById" parameterType="Long">
+        delete from cul_event where id = #{id}
+    </delete>
+
+    <delete id="deleteCulEventByIds" parameterType="String">
+        delete from cul_event where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

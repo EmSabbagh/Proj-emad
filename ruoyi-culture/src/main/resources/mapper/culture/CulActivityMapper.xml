@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.culture.mapper.CulActivityMapper">
+    
+    <resultMap type="CulActivity" id="CulActivityResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="content"    column="content"    />
+        <result property="place"    column="place"    />
+        <result property="activityTime"    column="activity_time"    />
+        <result property="publishUser"    column="publish_user"    />
+        <result property="publishTime"    column="publish_time"    />
+    </resultMap>
+
+    <sql id="selectCulActivityVo">
+        select id, name, content, place, activity_time, publish_user, publish_time from cul_activity
+    </sql>
+
+    <select id="selectCulActivityList" parameterType="CulActivity" resultMap="CulActivityResult">
+        <include refid="selectCulActivityVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="place != null  and place != ''"> and place = #{place}</if>
+            <if test="params.beginActivityTime != null and params.beginActivityTime != '' and params.endActivityTime != null and params.endActivityTime != ''"> and activity_time between #{params.beginActivityTime} and #{params.endActivityTime}</if>
+            <if test="publishUser != null "> and publish_user = #{publishUser}</if>
+            <if test="params.beginPublishTime != null and params.beginPublishTime != '' and params.endPublishTime != null and params.endPublishTime != ''"> and publish_time between #{params.beginPublishTime} and #{params.endPublishTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectCulActivityById" parameterType="Long" resultMap="CulActivityResult">
+        <include refid="selectCulActivityVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCulActivity" parameterType="CulActivity" useGeneratedKeys="true" keyProperty="id">
+        insert into cul_activity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="content != null">content,</if>
+            <if test="place != null">place,</if>
+            <if test="activityTime != null">activity_time,</if>
+            <if test="publishUser != null">publish_user,</if>
+            <if test="publishTime != null">publish_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="content != null">#{content},</if>
+            <if test="place != null">#{place},</if>
+            <if test="activityTime != null">#{activityTime},</if>
+            <if test="publishUser != null">#{publishUser},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCulActivity" parameterType="CulActivity">
+        update cul_activity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="place != null">place = #{place},</if>
+            <if test="activityTime != null">activity_time = #{activityTime},</if>
+            <if test="publishUser != null">publish_user = #{publishUser},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCulActivityById" parameterType="Long">
+        delete from cul_activity where id = #{id}
+    </delete>
+
+    <delete id="deleteCulActivityByIds" parameterType="String">
+        delete from cul_activity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

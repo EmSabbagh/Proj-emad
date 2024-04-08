@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.culture.mapper.CulBacklinksMapper">
+    
+    <resultMap type="CulBacklinks" id="CulBacklinksResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="links"    column="links"    />
+    </resultMap>
+
+    <sql id="selectCulBacklinksVo">
+        select id, name, links from cul_backlinks
+    </sql>
+
+    <select id="selectCulBacklinksList" parameterType="CulBacklinks" resultMap="CulBacklinksResult">
+        <include refid="selectCulBacklinksVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="links != null  and links != ''"> and links = #{links}</if>
+        </where>
+    </select>
+    
+    <select id="selectCulBacklinksById" parameterType="Long" resultMap="CulBacklinksResult">
+        <include refid="selectCulBacklinksVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCulBacklinks" parameterType="CulBacklinks" useGeneratedKeys="true" keyProperty="id">
+        insert into cul_backlinks
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="links != null">links,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="links != null">#{links},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCulBacklinks" parameterType="CulBacklinks">
+        update cul_backlinks
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="links != null">links = #{links},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCulBacklinksById" parameterType="Long">
+        delete from cul_backlinks where id = #{id}
+    </delete>
+
+    <delete id="deleteCulBacklinksByIds" parameterType="String">
+        delete from cul_backlinks where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
